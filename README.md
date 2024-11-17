@@ -155,7 +155,7 @@ calendario_df = calendario_df.withColumn("Ano", year(col("Data")).cast("int")) \
     .withColumn("TrimestreNum", quarter(col("Data")).cast("int")) \
     .withColumn("TrimestreAnoNum", (col("Ano") * 100 + col("TrimestreNum")).cast("int") ) \
     .withColumn("TrimestreAnoNome", concat(lit("T"), col("trimestreNum"), lit("-"), lit(col("ano")) )) \
-    .withColumn("DiaSemanaNum", weekday(col("Data")).cast("int")) \
+    .withColumn("DiaSemanaNum", dayofweek(col("Data")).cast("int")) \
     .withColumn("DiaSemanaNome", pt_br_dia_semana_udf(col("DiaSemanaNum"))) \
     .withColumn("DiaSemanaNomeAbrev", col("DiaSemanaNome").substr(1,3)) \
     .withColumn("SemanaIsoNum", weekofyear(col("Data")).cast("int")) \
