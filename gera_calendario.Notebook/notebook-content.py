@@ -29,27 +29,11 @@ from pyspark.sql.types import *
 from datetime import datetime, timedelta
 import math
 
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# PARAMETERS CELL ********************
-
 # Parâmetros
-data_inicial = "2010-01-01"
+data_inicial = "2010-01-01" 
 data_final = datetime.now().strftime("%Y-12-31")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
+nome_lakehouse = "lakehouse"
+nome_tabela = "calendario"
 
 # Função para gerar feriados fixos
 def gera_feriados_fixos(ano):
@@ -107,17 +91,6 @@ def gera_todos_feriados_lista_anos(ano_inicial, ano_final):
 
 # Gera os feriados 
 todos_feriados = gera_todos_feriados_lista_anos(int(data_inicial[:4]), int(data_final[:4]))
-print(todos_feriados)
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
 
 # Cria um dataframe com os feriados
 feriados = []
@@ -125,46 +98,16 @@ for ano, feriados_dic in todos_feriados.items():
     for feriado, data in feriados_dic.items():
         feriados.append((feriado, data))
 feriados_df = spark.createDataFrame(feriados, ["Feriado", "Data"])
-feriados_df.show()
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
 
 # Gera um dataframe com todas as datas do intervalo
 dias_df = spark.createDataFrame(
     [(data_inicial, data_final)], ["data_inicial", "data_final"]
 ).selectExpr("sequence(to_date(data_inicial), to_date(data_final), interval 1 day) as date") \
  .selectExpr("explode(date) as Data")
-dias_df.show()
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
 
 # Mescla os dois dataframes para identificar os feriados
 calendario_df = dias_df.join(feriados_df, dias_df.Data == feriados_df.Data, "left").select(dias_df.Data, feriados_df.Feriado)
 calendario_df = calendario_df.withColumn("E_Feriado", when(col("Feriado").isNotNull(), 1).otherwise(0))
-calendario_df.show()
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
 
 # Cria os dicionários para o pt-BR
 pt_br_mes_nome = {
@@ -177,77 +120,79 @@ pt_br_dia_semana = {
     4: "Sexta-feira", 5: "Sábado", 6: "Domingo"
 }
 
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
 # Cria as funções para traduzir os nomes
 pt_br_mes_nome_udf = udf(lambda x: pt_br_mes_nome[x], StringType())
 pt_br_dia_semana_udf = udf(lambda x: pt_br_dia_semana[x], StringType())
 
+# Cria um DataFrame temporário com a data atual
+data_atual_df = spark.createDataFrame([(datetime.now(),)], ["data_atual"])
 
-# METADATA ********************
+# Dataframe para variáveis em relação a data atual
+data_atual_df = data_atual_df.withColumn("mes_atual", month(col("data_atual")).cast("int")) \
+    .withColumn("ano_atual", year(col("data_atual")).cast("int")) \
+    .withColumn("mes_ano_num_atual", (col("ano_atual") * 100 + col("mes_atual")).cast("int")) \
+    .withColumn("trimestre_ano_num_atual", (col("ano_atual") * 100 + (floor((col("mes_atual") - 1) / 3) + 1)).cast("int")) \
+    .withColumn("semana_iso_num_atual", weekofyear(col("data_atual")).cast("int")) \
+    .withColumn("ano_iso_num_atual", year(date_add(col("data_atual"), expr("26 - weekofyear(data_atual)"))).cast("int")) \
+    .withColumn("semana_ano_iso_num_atual", (col("ano_iso_num_atual") * 100 + col("semana_iso_num_atual")).cast("int"))
 
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
+# Extrai cada valor como uma variável individual
+valores_data = data_atual_df.select(
+    "mes_atual", 
+    "ano_atual", 
+    "mes_ano_num_atual", 
+    "trimestre_ano_num_atual", 
+    "semana_iso_num_atual", 
+    "ano_iso_num_atual", 
+    "semana_ano_iso_num_atual"
+).first()
 
-# CELL ********************
+# Acessa cada valor individualmente
+data_atual = datetime.now().date()
+mes_atual = valores_data["mes_atual"]
+ano_atual = valores_data["ano_atual"]
+mes_ano_num_atual = valores_data["mes_ano_num_atual"]
+trimestre_ano_num_atual = valores_data["trimestre_ano_num_atual"]
+semana_iso_num_atual = valores_data["semana_iso_num_atual"]
+ano_iso_num_atual = valores_data["ano_iso_num_atual"]
+semana_ano_iso_num_atual = valores_data["semana_ano_iso_num_atual"]
 
-# Create other columns with pt-BR
+# Cria outras colunas em "pt-BR"
 calendario_df = calendario_df.withColumn("Ano", year(col("Data")).cast("int")) \
     .withColumn("Dia", date_format(col("Data"), "d").cast("int")) \
     .withColumn("MesNum", month(col("Data")).cast("int")) \
     .withColumn("MesNome", pt_br_mes_nome_udf(col("MesNum"))) \
     .withColumn("MesNomeAbrev", col("MesNome").substr(1,3)) \
-    .withColumn("MesAno", concat_ws("/", col("MesNomeAbrev"), date_format(col("Data"), "yy"))) \
+    .withColumn("MesAnoNome", concat_ws("/", col("MesNomeAbrev"), date_format(col("Data"), "yy"))) \
     .withColumn("MesAnoNum", col("Ano") * 100 + col("MesNum").cast("int")) \
-    .withColumn("TrimentreNum", quarter(col("Data")).cast("int")) \
+    .withColumn("TrimestreNum", quarter(col("Data")).cast("int")) \
+    .withColumn("TrimestreAnoNum", (col("Ano") * 100 + col("TrimestreNum")).cast("int") ) \
+    .withColumn("TrimestreAnoNome", concat(lit("T"), col("trimestreNum"), lit("-"), lit(col("ano")) )) \
     .withColumn("DiaSemanaNum", weekday(col("Data")).cast("int")) \
     .withColumn("DiaSemanaNome", pt_br_dia_semana_udf(col("DiaSemanaNum"))) \
     .withColumn("DiaSemanaNomeAbrev", col("DiaSemanaNome").substr(1,3)) \
     .withColumn("SemanaIsoNum", weekofyear(col("Data")).cast("int")) \
     .withColumn("AnoIso", year(date_add(col("Data"), 26 - col("SemanaIsoNum"))).cast("int")) \
+    .withColumn("SemanaAnoIsoNum", (col("AnoIso") * 100 + col("SemanaIsoNum")).cast("int")) \
+    .withColumn("SemanaAnoIsoNome", concat(lit("S"), lit(lpad(col("SemanaIsoNum").cast("string"), 2, "0")), lit("-"), lit(col("ano")) )) \
     .withColumn("E_FinalSemana", when(col("DiaSemanaNum")>4, 1).otherwise(0).cast("int")) \
-    .withColumn("E_DiaUtil", when((col("E_Feriado") == 1) | (col("E_FinalSemana") == 1), 0).otherwise(1).cast("int"))
-display(calendario_df.orderBy("Data").toPandas().head(10))
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
+    .withColumn("E_DiaUtil", when((col("E_Feriado") == 1) | (col("E_FinalSemana") == 1), 0).otherwise(1).cast("int")) \
+    .withColumn("DataAtual", when(col("Data") == data_atual, "Data atual").otherwise(col("Data")).cast("string")) \
+    .withColumn("SemanaAtual", when(col("SemanaAnoIsoNum") == semana_ano_iso_num_atual, "Semana atual").otherwise(col("SemanaAnoIsoNome")).cast("string")) \
+    .withColumn("MesAtual", when(col("MesAnoNum") == mes_ano_num_atual, "Mês atual").otherwise(col("MesAnoNome")).cast("string")) \
+    .withColumn("TrimestreAtual", when(col("TrimestreAnoNum") == trimestre_ano_num_atual, "Trimestre atual").otherwise(col("TrimestreAnoNome")).cast("string")) \
+    .withColumn("AnoAtual", when(col("Ano") == ano_atual, "Ano atual").otherwise(col("Ano")).cast("string")) 
 
 # Salva o dataframe como tabela Delta
-calendario_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable("lakehouse.calendario")
+calendario_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{nome_lakehouse}.{nome_tabela}")
+
+# Exibe os dados carregados
+calendario_df = spark.sql(f"SELECT * FROM {nome_lakehouse}.{nome_tabela} ORDER BY Data ASC")
+display(calendario_df)
 
 # METADATA ********************
 
 # META {
 # META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-# MAGIC %%sql
-# MAGIC -- Exibe os dados carregados no lakehouse
-# MAGIC SELECT * FROM lakehouse.calendario
-# MAGIC ORDER BY Data ASC 
-
-# METADATA ********************
-
-# META {
-# META   "language": "sparksql",
 # META   "language_group": "synapse_pyspark"
 # META }
