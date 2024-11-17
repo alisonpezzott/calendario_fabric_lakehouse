@@ -16,7 +16,7 @@
       },
       {
         "name": "PBI_ProTooling",
-        "value": "[\"WebModelingEdit\"]"
+        "value": "[\"WebModelingEdit\",\"RemoteModeling\"]"
       }
     ],
     "collation": "Latin1_General_100_BIN2_UTF8",
@@ -682,11 +682,15 @@
             "changedProperties": [
               {
                 "property": "DisplayFolder"
+              },
+              {
+                "property": "SortByColumn"
               }
             ],
             "dataType": "string",
             "displayFolder": "Mes",
             "lineageTag": "f5db8733-0dce-42fe-90d4-ee607588c137",
+            "sortByColumn": "MesAnoNum",
             "sourceColumn": "MesAtual",
             "sourceLineageTag": "MesAtual",
             "sourceProviderType": "varchar(8000)",
