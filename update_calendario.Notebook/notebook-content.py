@@ -197,10 +197,51 @@ calendar_df_full.show()
 
 # CELL ********************
 
-# Create other columns in pt-BR
-calendar_df_full = calendar_df_full.withColumn("day_of_week", date_format(col("date"), "EEEE", culture).cast("string")) \
-    .withColumn("day_of_week_short", date_format(col("date"), "EEE", culture).cast("string")) \
-    .withColumn("month_name", date_format(col("date"), "MMMM", culture).cast("string")) \
-    .withColumn("month_name_short", date_format(col("date"), "MMM", culture).cast("string"))
+# Create a dictionary for month names in pt-BR
+month_names_ptbr = {
+    1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
+    7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+}
+# Create a dictionary for short month names in pt-BR
+month_names_short_ptbr = {
+    1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "Jun",
+    7: "Jul", 8: "Ago", 9: "Set", 10: "Out", 11: "Nov", 12: "Dez"
+}
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+# Create UDFs to map month numbers to pt-BR names
+month_name_udf = udf(lambda x: month_names_ptbr[x], StringType())
+month_name_short_udf = udf(lambda x: month_names_short_ptbr[x], StringType())
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+# Create other columns
+calendar_df_full = calendar_df.withColumn("year", year(col("date")).cast("int")) \
+    .withColumn("day", date_format(col("date"), "d").cast("int")) \
+    .withColumn("month_number", month(col("date")).cast("int")) \
+    .withColumn("month_name", month_name_udf(col("month_number"))) \
+    .withColumn("month_name_short", month_name_short_udf(col("month_number")))
 calendar_df_full.show()
 
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
