@@ -311,4 +311,4 @@ calendar_df_full_ptbr = calendar_df_full_ptbr.withColumnRenamed("date", "Data") 
 # CELL ********************
 
 # Save the DataFrame to a Delta table
-calendar_df_full_ptbr.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario")
+calendar_df_full_ptbr.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario"
