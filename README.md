@@ -2,7 +2,7 @@
 
 ### Opção 1
 
-Você pode clonar este repositório e conectar ao seu workspace e fazer um commit.
+Você pode clonar este repositório e conectar ao seu workspace e atualizar.
 
 ### Opção 2
 
