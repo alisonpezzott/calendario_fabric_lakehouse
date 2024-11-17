@@ -182,9 +182,14 @@ from pyspark.sql.functions import year
 # Create other columns
 calendar_df_full = calendar_df.withColumn("year", year(col("date")).cast("int")) \
     .withColumn("day", date_format(col("date"), "d").cast("int")) \
-    .withColumn("month_number", month(col("date")).cast("int")) \
     .withColumn("month_name", date_format(col("date"), "MMMM")) \
-    .withColumn("month_name_short", date_format(col("date"), "MMM"))
+    .withColumn("month_name_short", date_format(col("date"), "MMM")) \
+    .withColumn("month_number", month(col("date")).cast("int")) \
+    .withColumn("day_of_week", date_format(col("date"), "EEEE")) \
+    .withColumn("day_of_week_short", date_format(col("date"), "EEE")) \
+    .withColumn("week_starting_monday", date_format(next_day(col("date"), "Monday"), "u").cast("int")) \
+    .withColumn("day of week_number", date_format(col("date"), "u").cast("int")) \
+    .withColumn("is_weekend", date_format(col("date"), "u").isin([6, 7]))
 calendar_df_full.show()
 
 
@@ -202,11 +207,9 @@ month_names_ptbr = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
     7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
 }
-# Create a dictionary for short month names in pt-BR
-month_names_short_ptbr = {
-    1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "Jun",
-    7: "Jul", 8: "Ago", 9: "Set", 10: "Out", 11: "Nov", 12: "Dez"
-}
+
+# Create a dictionary for short month names in pt-BR by extracting the first three characters
+month_names_short_ptbr = {k: v[:3] for k, v in month_names_ptbr.items()}
 
 # METADATA ********************
 
