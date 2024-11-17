@@ -194,3 +194,12 @@ calendar_df_full.show()
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# Create other columns in pt-BR
+calendar_df_full = calendar_df_full.withColumn("day_of_week", date_format(col("date"), "EEEE", culture).cast("string")) \
+    .withColumn("day_of_week_short", date_format(col("date"), "EEE", culture).cast("string")) \
+    .withColumn("month_name", date_format(col("date"), "MMMM", culture).cast("string")) \
+    .withColumn("month_name_short", date_format(col("date"), "MMM", culture).cast("string"))
+calendar_df_full.show()
+
+# CELL ********************
