@@ -22,7 +22,7 @@
 
 # CELL ********************
 
-# packages
+# Carrega os pacotes
 import math
 from pyspark.sql.functions import *
 from datetime import datetime, timedelta
@@ -39,10 +39,9 @@ from pyspark.sql.functions import col, date_format, to_date, month, year, udf
 
 # CELL ********************
 
-#parameters
-start_date = "2021-01-01"
-end_date = datetime.now().strftime("%Y-12-31")
-culture = "pt-BR"
+# Parâmetros
+data_inicial = "2021-01-01"
+data_final = datetime.now().strftime("%Y-12-31")
 
 # METADATA ********************
 
@@ -53,81 +52,64 @@ culture = "pt-BR"
 
 # CELL ********************
 
-#function to gen fixed holidays
-def generate_holidays(year_ref):
-    fixed_holidays = {
-        "Confraternização Universal": datetime(year_ref, 1, 1),
-        "Aniversário de São Paulo": datetime(year_ref, 1, 25),
-        "Tiradentes": datetime(year_ref, 4, 21),
-        "Dia do Trabalho": datetime(year_ref, 5, 1),
-        "Revolução Constitucionalista": datetime(year_ref, 7, 9),
-        "Independência do Brasil": datetime(year_ref, 9, 7),
-        "Nossa Senhora Aparecida": datetime(year_ref, 10, 12),
-        "Finados": datetime(year_ref, 11, 2),
-        "Proclamação da República": datetime(year_ref, 11, 15),
-        "Consciência Negra": datetime(year_ref, 11, 20),
-        "Véspera de Natal": datetime(year_ref, 12, 24),
-        "Natal": datetime(year_ref, 12, 25),
-        "Véspera de Ano Novo": datetime(year_ref, 12, 31)
+# Função para gerar feriados fixos
+def gera_feriados_fixos(ano):
+    feriados_fixos = {
+        "Confraternização Universal": datetime(ano, 1, 1),
+        "Aniversário de São Paulo": datetime(ano, 1, 25),
+        "Tiradentes": datetime(ano, 4, 21),
+        "Dia do Trabalho": datetime(ano, 5, 1),
+        "Revolução Constitucionalista": datetime(ano, 7, 9),
+        "Independência do Brasil": datetime(ano, 9, 7),
+        "Nossa Senhora Aparecida": datetime(ano, 10, 12),
+        "Finados": datetime(ano, 11, 2),
+        "Proclamação da República": datetime(ano, 11, 15),
+        "Consciência Negra": datetime(ano, 11, 20),
+        "Véspera de Natal": datetime(ano, 12, 24),
+        "Natal": datetime(ano, 12, 25),
+        "Véspera de Ano Novo": datetime(ano, 12, 31)
     }
-    return fixed_holidays
+    return feriados_fixos
 
-def custom_mod(x, y):
+# Função para gerar feriados móveis
+def mod_maior_que_zero(x, y):
     m = x % y
     return m + y if m < 0 else m
 
-def generate_easter(year_ref):
-    easter_ordinal = math.ceil(
-        ((datetime(year_ref, 4, 1).toordinal() - 693594) / 7)
-        + (custom_mod(19 * custom_mod(year_ref, 19) - 7, 30) * 0.14)
+def gera_feriados_moveis(ano):
+    pascoa_numeral = math.ceil(
+        ((datetime(ano, 4, 1).toordinal() - 693594) / 7)
+        + (mod_maior_que_zero(19 * mod_maior_que_zero(ano, 19) - 7, 30) * 0.14)
     ) * 7 - 6 + 693594
-    
-    easter = datetime.fromordinal(int(easter_ordinal))
-    movable_holidays = {
-        "Segunda-feira de Carnaval": easter - timedelta(days=48),
-        "Terça-feira de Carnaval": easter - timedelta(days=47),
-        "Quarta-feira de Cinzas": easter - timedelta(days=46),
-        "Sexta-feira Santa": easter - timedelta(days=2),
-        "Páscoa": easter,
-        "Corpus Christi": easter + timedelta(days=60)
+    pascoa_data = datetime.fromordinal(int(pascoa_numeral))
+    feriados_moveis = {
+        "Segunda-feira de Carnaval": pascoa_data - timedelta(days=48),
+        "Terça-feira de Carnaval": pascoa_data - timedelta(days=47),
+        "Quarta-feira de Cinzas": pascoa_data - timedelta(days=46),
+        "Sexta-feira Santa": pascoa_data - timedelta(days=2),
+        "Páscoa": pascoa_data,
+        "Corpus Christi": pascoa_data + timedelta(days=60)
     }
-    return movable_holidays
+    return feriados_moveis
 
-# Generate holidays for a given year
-def generate_all_holidays(year_ref):
-    fixed_holidays = generate_holidays(year_ref)
-    movable_holidays = generate_easter(year_ref)
-    holidays = {**fixed_holidays, **movable_holidays}
-    return holidays
+# Função para gerar todos os feriados para um ano
+def gera_todos_feriados_um_ano(ano):
+    feriados_fixos = gera_feriados_fixos(ano)
+    feriados_moveis = gera_feriados_moveis(ano)
+    feriados = {**feriados_fixos, **feriados_moveis}
+    return feriados
 
-# Generate holidays for a range of years
-def generate_holidays_for_range(start_year, end_year):
-    all_holidays = {}
-    for year_ref in range(start_year, end_year + 1):
-        all_holidays[year_ref] = generate_all_holidays(year_ref)
-    return all_holidays
+# Função para gerar todos os feriados para uma lista de anos
+def gera_todos_feriados_lista_anos(ano_inicial, ano_final):
+    todos_feriados = {}
+    for ano in range(ano_inicial, ano_final + 1):
+        todos_feriados[ano] = gera_todos_feriados_um_ano(ano)
+    return todos_feriados
 
-# Generate holidays for the range of years
-all_holidays = generate_holidays_for_range(int(start_date[:4]), int(end_date[:4]))
-print(all_holidays)
+# Gera os feriados 
+todos_feriados = gera_todos_feriados_lista_anos(int(data_inicial[:4]), int(data_final[:4]))
+print(todos_feriados)
 
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-# Generate a DataFrame with all holidays
-holidays = []
-for year, holidays_dict in all_holidays.items():
-    for holiday, date in holidays_dict.items():
-        holidays.append((holiday, date))
-holidays_df = spark.createDataFrame(holidays, ["holiday", "date"])
-holidays_df.show()
 
 # METADATA ********************
 
@@ -138,12 +120,13 @@ holidays_df.show()
 
 # CELL ********************
 
-# Generate a DataFrame with all days in the range
-days_df = spark.createDataFrame(
-    [(start_date, end_date)], ["start_date", "end_date"]
-).selectExpr("sequence(to_date(start_date), to_date(end_date), interval 1 day) as date") \
- .selectExpr("explode(date) as date")
-days_df.show()
+# Cria um dataframe com os feriados
+feriados = []
+for ano, feriados_dic in todos_feriados.items():
+    for feriado, data in feriados_dic.items():
+        feriados.append((feriado, data))
+feriados_df = spark.createDataFrame(feriados, ["Feriado", "Data"])
+feriados_df.show()
 
 # METADATA ********************
 
@@ -154,10 +137,12 @@ days_df.show()
 
 # CELL ********************
 
-# Join the two DataFrames to mark holidays
-calendar_df = days_df.join(holidays_df, days_df.date == holidays_df.date, "left").select(days_df.date, holidays_df.holiday)
-calendar_df = calendar_df.withColumn("is_holiday", when(col("holiday").isNotNull(), 1).otherwise(0))
-calendar_df.show()
+# Gera um dataframe com todas as datas do intervalo
+dias_df = spark.createDataFrame(
+    [(data_inicial, data_final)], ["data_inicial", "data_final"]
+).selectExpr("sequence(to_date(data_inicial), to_date(data_final), interval 1 day) as date") \
+ .selectExpr("explode(date) as Data")
+dias_df.show()
 
 # METADATA ********************
 
@@ -168,7 +153,21 @@ calendar_df.show()
 
 # CELL ********************
 
-# Reimport packages
+# Mescla os dois dataframes para identificar os feriados
+calendario_df = dias_df.join(feriados_df, dias_df.Data == feriados_df.Data, "left").select(dias_df.Data, feriados_df.Feriado)
+calendario_df = calendario_df.withColumn("E_Feriado", when(col("Feriado").isNotNull(), 1).otherwise(0))
+calendario_df.show()
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+# Reimporta os pacotes
 from pyspark.sql.functions import *
 
 # METADATA ********************
@@ -180,50 +179,20 @@ from pyspark.sql.functions import *
 
 # CELL ********************
 
-# Create other columns
-calendar_df_full = calendar_df.withColumn("year", year(col("date")).cast("int")) \
-    .withColumn("day_of_month", date_format(col("date"), "d").cast("int")) \
-    .withColumn("month_name", date_format(col("date"), "MMMM")) \
-    .withColumn("month_name_short", date_format(col("date"), "MMM")) \
-    .withColumn("month_number", month(col("date")).cast("int")) \
-    .withColumn("month_year", date_format(col("date"), "MMMyy")) \
-    .withColumn("start_of_month", trunc(col("date"), "month")) \
-    .withColumn("end_of_month",  last_day(col("date"))) \
-    .withColumn("quarter_of_year", quarter(col("date")).cast("int")) \
-    .withColumn("day_of_week", date_format(col("date"), "EEEE")) \
-    .withColumn("day_of_week_short", date_format(col("date"), "EEE")) \
-    .withColumn("day_of_week_number", weekday(col("date")).cast("int")) \
-    .withColumn("iso_week_number", weekofyear(col("date")).cast("int")) \
-    .withColumn("iso_year", year(date_add(col("date"), 26 - col("iso_week_number"))).cast("int")) \
-    .withColumn("is_weekend", when(col("day_of_week_number")>4, 1).otherwise(0).cast("int")) \
-    .withColumn("is_working_day", when((col("is_holiday") == 1) | (col("is_weekend") == 1), 0).otherwise(1).cast("int"))
-display(calendar_df_full.orderBy("date").toPandas().head(10))
-
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-# Create dictionaries for pt-BR
-month_names_ptbr = {
+# Cria os dicion
+pt_br_mes_nome = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
     7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
 }
 
-month_names_short_ptbr = {k: v[:3] for k, v in month_names_ptbr.items()}
+pt_br_mes_nome_abrev = {k: v[:3] for k, v in pt_br_mes_nome.items()}
 
-weekday_ptbr = {
+pt_br_dia_semana = {
     0: "Segunda-feira", 1: "Terça-feira", 2: "Quarta-feira", 3: "Quinta-feira", 
     4: "Sexta-feira", 5: "Sábado", 6: "Domingo"
 }
 
-weekday_short_ptbr = {k: v[:3] for k, v in weekday_ptbr.items()}
+pt_br_dia_semana_abrev = {k: v[:3] for k, v in pt_br_dia_semana.items()}
 
 
 # METADATA ********************
@@ -235,11 +204,11 @@ weekday_short_ptbr = {k: v[:3] for k, v in weekday_ptbr.items()}
 
 # CELL ********************
 
-# Create UDFs to map to pt-BR names
-month_name_ptbr_udf = udf(lambda x: month_names_ptbr[x], StringType())
-month_name_short_ptbr_udf = udf(lambda x: month_names_short_ptbr[x], StringType())
-weekday_ptbr_udf = udf(lambda x: weekday_ptbr[x], StringType())
-weekday_short_ptbr_udf = udf(lambda x: weekday_short_ptbr[x], StringType())
+# Cria as funções para traduzir os nomes
+pt_br_mes_nome_udf = udf(lambda x: pt_br_mes_nome[x], StringType())
+pt_br_mes_nome_abrev_udf = udf(lambda x: pt_br_mes_nome_abrev[x], StringType())
+pt_br_dia_semana_udf = udf(lambda x: pt_br_dia_semana[x], StringType())
+pt_br_dia_semana_abrev_udf = udf(lambda x: pt_br_dia_semana_abrev[x], StringType())
 
 
 # METADATA ********************
@@ -252,54 +221,23 @@ weekday_short_ptbr_udf = udf(lambda x: weekday_short_ptbr[x], StringType())
 # CELL ********************
 
 # Create other columns with pt-BR
-calendar_df_full_ptbr = calendar_df.withColumn("year", year(col("date")).cast("int")) \
-    .withColumn("day_of_month", date_format(col("date"), "d").cast("int")) \
-    .withColumn("month_number", month(col("date")).cast("int")) \
-    .withColumn("month_name", month_name_ptbr_udf(col("month_number"))) \
-    .withColumn("month_name_short", month_name_short_ptbr_udf(col("month_number"))) \
-    .withColumn("month_year", col("month_name_short") + date_format(col("date"), "yy")) \
-    .withColumn("start_of_month", trunc(col("date"), "month")) \
-    .withColumn("end_of_month",  last_day(col("date"))) \
-    .withColumn("quarter_of_year", quarter(col("date")).cast("int")) \
-    .withColumn("day_of_week_number", weekday(col("date")).cast("int")) \
-    .withColumn("day_of_week", weekday_ptbr_udf(col("day_of_week_number"))) \
-    .withColumn("day_of_week_short", weekday_short_ptbr_udf(col("day_of_week_number"))) \
-    .withColumn("iso_week_number", weekofyear(col("date")).cast("int")) \
-    .withColumn("iso_year", year(date_add(col("date"), 26 - col("iso_week_number"))).cast("int")) \
-    .withColumn("is_weekend", when(col("day_of_week_number")>4, 1).otherwise(0).cast("int")) \
-    .withColumn("is_working_day", when((col("is_holiday") == 1) | (col("is_weekend") == 1), 0).otherwise(1).cast("int"))
-display(calendar_df_full_ptbr.orderBy("date").toPandas().head(10))
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-# Rename columns before saving to Delta table
-calendar_df_full_ptbr = calendar_df_full_ptbr.withColumnRenamed("date", "Data") \
-    .withColumnRenamed("holiday", "Feriado") \
-    .withColumnRenamed("is_holiday", "E_Feriado") \
-    .withColumnRenamed("year", "Ano") \
-    .withColumnRenamed("day_of_month", "Dia") \
-    .withColumnRenamed("month_name", "MesNome") \
-    .withColumnRenamed("month_name_short", "MesNomeAbrev") \
-    .withColumnRenamed("month_number", "MesNum") \
-    .withColumnRenamed("month_year", "MesAno") \
-    .withColumnRenamed("start_of_month", "MesInicio") \
-    .withColumnRenamed("end_of_month", "MesFim") \
-    .withColumnRenamed("quarter_of_year", "Trimestre") \
-    .withColumnRenamed("day_of_week", "DiaSemana") \
-    .withColumnRenamed("day_of_week_short", "DiaSemanaAbrev") \
-    .withColumnRenamed("day_of_week_number", "DiaSemanaNum") \
-    .withColumnRenamed("iso_week_number", "SemanaIsoNum") \
-    .withColumnRenamed("iso_year", "AnoIso") \
-    .withColumnRenamed("is_weekend", "E_FinalSemana") \
-    .withColumnRenamed("is_working_day", "E_DiaUtil")
+calendario_df = calendario_df.withColumn("Ano", year(col("Data")).cast("int")) \
+    .withColumn("Dia", date_format(col("Data"), "d").cast("int")) \
+    .withColumn("MesNum", month(col("Data")).cast("int")) \
+    .withColumn("MesNome", pt_br_mes_nome_udf(col("MesNum"))) \
+    .withColumn("MesNomeAbrev", pt_br_mes_nome_abrev_udf(col("MesNum"))) \
+    .withColumn("MesAno", col("MesNomeAbrev") + date_format(col("Data"), "yy")) \
+    .withColumn("MesInicio", trunc(col("Data"), "month")) \
+    .withColumn("MesFinal",  last_day(col("Data"))) \
+    .withColumn("TrimentreNum", quarter(col("Data")).cast("int")) \
+    .withColumn("DiaSemanaNum", weekday(col("Data")).cast("int")) \
+    .withColumn("DiaSemanaNome", pt_br_dia_semana_udf(col("DiaSemanaNum"))) \
+    .withColumn("DiaSemanaNomeAbrev", pt_br_dia_semana_abrev_udf(col("DiaSemanaNum"))) \
+    .withColumn("SemanaIsoNum", weekofyear(col("Data")).cast("int")) \
+    .withColumn("AnoIso", year(date_add(col("Data"), 26 - col("SemanaIsoNum"))).cast("int")) \
+    .withColumn("E_FinalSemana", when(col("DiaSemanaNum")>4, 1).otherwise(0).cast("int")) \
+    .withColumn("E_DiaUtil", when((col("E_Feriado") == 1) | (col("E_FinalSemana") == 1), 0).otherwise(1).cast("int"))
+display(calendario_df.orderBy("Data").toPandas().head(10))
 
 # METADATA ********************
 
@@ -310,8 +248,8 @@ calendar_df_full_ptbr = calendar_df_full_ptbr.withColumnRenamed("date", "Data") 
 
 # CELL ********************
 
-# Save the DataFrame to a Delta table
-calendar_df_full_ptbr.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario")
+# Salva o dataframe como tabela Delta
+calendario_df.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario")
 
 # METADATA ********************
 
