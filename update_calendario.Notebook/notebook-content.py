@@ -311,4 +311,24 @@ calendar_df_full_ptbr = calendar_df_full_ptbr.withColumnRenamed("date", "Data") 
 # CELL ********************
 
 # Save the DataFrame to a Delta table
-calendar_df_full_ptbr.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario"
+calendar_df_full_ptbr.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+# MAGIC %%sql
+# MAGIC -- show table from lake
+# MAGIC SELECT * FROM lakehouse.calendario
+
+# METADATA ********************
+
+# META {
+# META   "language": "sparksql",
+# META   "language_group": "synapse_pyspark"
+# META }
