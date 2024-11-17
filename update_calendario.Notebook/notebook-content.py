@@ -277,3 +277,38 @@ display(calendar_df_full_ptbr.orderBy("date").toPandas().head(10))
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# CELL ********************
+
+# Rename columns before saving to Delta table
+calendar_df_full_ptbr = calendar_df_full_ptbr.withColumnRenamed("date", "Data") \
+    .withColumnRenamed("holiday", "Feriado") \
+    .withColumnRenamed("is_holiday", "E_Feriado") \
+    .withColumnRenamed("year", "Ano") \
+    .withColumnRenamed("day_of_month", "Dia") \
+    .withColumnRenamed("month_name", "MesNome") \
+    .withColumnRenamed("month_name_short", "MesNomeAbrev") \
+    .withColumnRenamed("month_number", "MesNum") \
+    .withColumnRenamed("month_year", "MesAno") \
+    .withColumnRenamed("start_of_month", "MesInicio") \
+    .withColumnRenamed("end_of_month", "MesFim") \
+    .withColumnRenamed("quarter_of_year", "Trimestre") \
+    .withColumnRenamed("day_of_week", "DiaSemana") \
+    .withColumnRenamed("day_of_week_short", "DiaSemanaAbrev") \
+    .withColumnRenamed("day_of_week_number", "DiaSemanaNum") \
+    .withColumnRenamed("iso_week_number", "SemanaIsoNum") \
+    .withColumnRenamed("iso_year", "AnoIso") \
+    .withColumnRenamed("is_weekend", "E_FinalSemana") \
+    .withColumnRenamed("is_working_day", "E_DiaUtil")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+# Save the DataFrame to a Delta table
+calendar_df_full_ptbr.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario")
