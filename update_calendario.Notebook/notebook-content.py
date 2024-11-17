@@ -23,12 +23,11 @@
 # CELL ********************
 
 # Carrega os pacotes
-import math
-from pyspark.sql.functions import *
-from datetime import datetime, timedelta
-from pyspark.sql.types import *
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, date_format, to_date, month, year, udf
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+from datetime import datetime, timedelta
+import math
 
 # METADATA ********************
 
@@ -37,10 +36,10 @@ from pyspark.sql.functions import col, date_format, to_date, month, year, udf
 # META   "language_group": "synapse_pyspark"
 # META }
 
-# CELL ********************
+# PARAMETERS CELL ********************
 
 # Parâmetros
-data_inicial = "2021-01-01"
+data_inicial = "2010-01-01"
 data_final = datetime.now().strftime("%Y-12-31")
 
 # METADATA ********************
@@ -167,32 +166,16 @@ calendario_df.show()
 
 # CELL ********************
 
-# Reimporta os pacotes
-from pyspark.sql.functions import *
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-# Cria os dicion
+# Cria os dicionários para o pt-BR
 pt_br_mes_nome = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
     7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
 }
 
-pt_br_mes_nome_abrev = {k: v[:3] for k, v in pt_br_mes_nome.items()}
-
 pt_br_dia_semana = {
     0: "Segunda-feira", 1: "Terça-feira", 2: "Quarta-feira", 3: "Quinta-feira", 
     4: "Sexta-feira", 5: "Sábado", 6: "Domingo"
 }
-
-pt_br_dia_semana_abrev = {k: v[:3] for k, v in pt_br_dia_semana.items()}
 
 
 # METADATA ********************
@@ -206,9 +189,7 @@ pt_br_dia_semana_abrev = {k: v[:3] for k, v in pt_br_dia_semana.items()}
 
 # Cria as funções para traduzir os nomes
 pt_br_mes_nome_udf = udf(lambda x: pt_br_mes_nome[x], StringType())
-pt_br_mes_nome_abrev_udf = udf(lambda x: pt_br_mes_nome_abrev[x], StringType())
 pt_br_dia_semana_udf = udf(lambda x: pt_br_dia_semana[x], StringType())
-pt_br_dia_semana_abrev_udf = udf(lambda x: pt_br_dia_semana_abrev[x], StringType())
 
 
 # METADATA ********************
@@ -225,14 +206,13 @@ calendario_df = calendario_df.withColumn("Ano", year(col("Data")).cast("int")) \
     .withColumn("Dia", date_format(col("Data"), "d").cast("int")) \
     .withColumn("MesNum", month(col("Data")).cast("int")) \
     .withColumn("MesNome", pt_br_mes_nome_udf(col("MesNum"))) \
-    .withColumn("MesNomeAbrev", pt_br_mes_nome_abrev_udf(col("MesNum"))) \
-    .withColumn("MesAno", col("MesNomeAbrev") + date_format(col("Data"), "yy")) \
-    .withColumn("MesInicio", trunc(col("Data"), "month")) \
-    .withColumn("MesFinal",  last_day(col("Data"))) \
+    .withColumn("MesNomeAbrev", col("MesNome").substr(1,3)) \
+    .withColumn("MesAno", concat_ws("/", col("MesNomeAbrev"), date_format(col("Data"), "yy"))) \
+    .withColumn("MesAnoNum", col("Ano") * 100 + col("MesNum").cast("int")) \
     .withColumn("TrimentreNum", quarter(col("Data")).cast("int")) \
     .withColumn("DiaSemanaNum", weekday(col("Data")).cast("int")) \
     .withColumn("DiaSemanaNome", pt_br_dia_semana_udf(col("DiaSemanaNum"))) \
-    .withColumn("DiaSemanaNomeAbrev", pt_br_dia_semana_abrev_udf(col("DiaSemanaNum"))) \
+    .withColumn("DiaSemanaNomeAbrev", col("DiaSemanaNome").substr(1,3)) \
     .withColumn("SemanaIsoNum", weekofyear(col("Data")).cast("int")) \
     .withColumn("AnoIso", year(date_add(col("Data"), 26 - col("SemanaIsoNum"))).cast("int")) \
     .withColumn("E_FinalSemana", when(col("DiaSemanaNum")>4, 1).otherwise(0).cast("int")) \
@@ -249,7 +229,7 @@ display(calendario_df.orderBy("Data").toPandas().head(10))
 # CELL ********************
 
 # Salva o dataframe como tabela Delta
-calendario_df.write.format("delta").mode("overwrite").saveAsTable("lakehouse.calendario")
+calendario_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable("lakehouse.calendario")
 
 # METADATA ********************
 
@@ -261,8 +241,9 @@ calendario_df.write.format("delta").mode("overwrite").saveAsTable("lakehouse.cal
 # CELL ********************
 
 # MAGIC %%sql
-# MAGIC -- show table from lake
+# MAGIC -- Exibe os dados carregados no lakehouse
 # MAGIC SELECT * FROM lakehouse.calendario
+# MAGIC ORDER BY Data ASC 
 
 # METADATA ********************
 
