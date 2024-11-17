@@ -156,7 +156,7 @@ days_df.show()
 
 # Join the two DataFrames to mark holidays
 calendar_df = days_df.join(holidays_df, days_df.date == holidays_df.date, "left").select(days_df.date, holidays_df.holiday)
-calendar_df = calendar_df.withColumn("is_holiday", col("holiday").isNotNull())
+calendar_df = calendar_df.withColumn("is_holiday", when(col("holiday").isNotNull(), 1).otherwise(0))
 calendar_df.show()
 
 # METADATA ********************
@@ -168,7 +168,8 @@ calendar_df.show()
 
 # CELL ********************
 
-from pyspark.sql.functions import year
+# Reimport packages
+from pyspark.sql.functions import *
 
 # METADATA ********************
 
@@ -181,11 +182,23 @@ from pyspark.sql.functions import year
 
 # Create other columns
 calendar_df_full = calendar_df.withColumn("year", year(col("date")).cast("int")) \
-    .withColumn("day", date_format(col("date"), "d").cast("int")) \
-    .withColumn("month_number", month(col("date")).cast("int")) \
+    .withColumn("day_of_month", date_format(col("date"), "d").cast("int")) \
     .withColumn("month_name", date_format(col("date"), "MMMM")) \
-    .withColumn("month_name_short", date_format(col("date"), "MMM"))
-calendar_df_full.show()
+    .withColumn("month_name_short", date_format(col("date"), "MMM")) \
+    .withColumn("month_number", month(col("date")).cast("int")) \
+    .withColumn("month_year", date_format(col("date"), "MMMyy")) \
+    .withColumn("start_of_month", trunc(col("date"), "month")) \
+    .withColumn("end_of_month",  last_day(col("date"))) \
+    .withColumn("quarter_of_year", quarter(col("date")).cast("int")) \
+    .withColumn("day_of_week", date_format(col("date"), "EEEE")) \
+    .withColumn("day_of_week_short", date_format(col("date"), "EEE")) \
+    .withColumn("day_of_week_number", weekday(col("date")).cast("int")) \
+    .withColumn("iso_week_number", weekofyear(col("date")).cast("int")) \
+    .withColumn("iso_year", year(date_add(col("date"), 26 - col("iso_week_number"))).cast("int")) \
+    .withColumn("is_weekend", when(col("day_of_week_number")>4, 1).otherwise(0).cast("int")) \
+    .withColumn("is_working_day", when((col("is_holiday") == 1) | (col("is_weekend") == 1), 0).otherwise(1).cast("int"))
+display(calendar_df_full.orderBy("date").toPandas().head(10))
+
 
 
 # METADATA ********************
@@ -197,13 +210,21 @@ calendar_df_full.show()
 
 # CELL ********************
 
-# Create a dictionary for month names in pt-BR
+# Create dictionaries for pt-BR
 month_names_ptbr = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril", 5: "Maio", 6: "Junho",
     7: "Julho", 8: "Agosto", 9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
 }
-# Create a dictionary for short month names in pt-BR by extracting the first three characters
+
 month_names_short_ptbr = {k: v[:3] for k, v in month_names_ptbr.items()}
+
+weekday_ptbr = {
+    0: "Segunda-feira", 1: "Terça-feira", 2: "Quarta-feira", 3: "Quinta-feira", 
+    4: "Sexta-feira", 5: "Sábado", 6: "Domingo"
+}
+
+weekday_short_ptbr = {k: v[:3] for k, v in weekday_ptbr.items()}
+
 
 # METADATA ********************
 
@@ -214,9 +235,12 @@ month_names_short_ptbr = {k: v[:3] for k, v in month_names_ptbr.items()}
 
 # CELL ********************
 
-# Create UDFs to map month numbers to pt-BR names
+# Create UDFs to map to pt-BR names
 month_name_ptbr_udf = udf(lambda x: month_names_ptbr[x], StringType())
 month_name_short_ptbr_udf = udf(lambda x: month_names_short_ptbr[x], StringType())
+weekday_ptbr_udf = udf(lambda x: weekday_ptbr[x], StringType())
+weekday_short_ptbr_udf = udf(lambda x: weekday_short_ptbr[x], StringType())
+
 
 # METADATA ********************
 
@@ -229,11 +253,22 @@ month_name_short_ptbr_udf = udf(lambda x: month_names_short_ptbr[x], StringType(
 
 # Create other columns with pt-BR
 calendar_df_full_ptbr = calendar_df.withColumn("year", year(col("date")).cast("int")) \
-    .withColumn("day", date_format(col("date"), "d").cast("int")) \
+    .withColumn("day_of_month", date_format(col("date"), "d").cast("int")) \
     .withColumn("month_number", month(col("date")).cast("int")) \
     .withColumn("month_name", month_name_ptbr_udf(col("month_number"))) \
-    .withColumn("month_name_short", month_name_short_ptbr_udf(col("month_number")))
-calendar_df_full_ptbr.show()
+    .withColumn("month_name_short", month_name_short_ptbr_udf(col("month_number"))) \
+    .withColumn("month_year", col("month_name_short") + date_format(col("date"), "yy")) \
+    .withColumn("start_of_month", trunc(col("date"), "month")) \
+    .withColumn("end_of_month",  last_day(col("date"))) \
+    .withColumn("quarter_of_year", quarter(col("date")).cast("int")) \
+    .withColumn("day_of_week_number", weekday(col("date")).cast("int")) \
+    .withColumn("day_of_week", weekday_ptbr_udf(col("day_of_week_number"))) \
+    .withColumn("day_of_week_short", weekday_short_ptbr_udf(col("day_of_week_number"))) \
+    .withColumn("iso_week_number", weekofyear(col("date")).cast("int")) \
+    .withColumn("iso_year", year(date_add(col("date"), 26 - col("iso_week_number"))).cast("int")) \
+    .withColumn("is_weekend", when(col("day_of_week_number")>4, 1).otherwise(0).cast("int")) \
+    .withColumn("is_working_day", when((col("is_holiday") == 1) | (col("is_weekend") == 1), 0).otherwise(1).cast("int"))
+display(calendar_df_full_ptbr.orderBy("date").toPandas().head(10))
 
 
 # METADATA ********************
