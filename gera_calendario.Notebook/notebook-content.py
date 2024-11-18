@@ -116,8 +116,8 @@ pt_br_mes_nome = {
 }
 
 pt_br_dia_semana = {
-    0: "Segunda-feira", 1: "Terça-feira", 2: "Quarta-feira", 3: "Quinta-feira", 
-    4: "Sexta-feira", 5: "Sábado", 6: "Domingo"
+    1: "Segunda-feira", 2: "Terça-feira", 3: "Quarta-feira", 4: "Quinta-feira", 
+    5: "Sexta-feira", 6: "Sábado", 7: "Domingo"
 }
 
 # Cria as funções para traduzir os nomes
@@ -168,14 +168,14 @@ calendario_df = calendario_df.withColumn("Ano", year(col("Data")).cast("int")) \
     .withColumn("TrimestreNum", quarter(col("Data")).cast("int")) \
     .withColumn("TrimestreAnoNum", (col("Ano") * 100 + col("TrimestreNum")).cast("int") ) \
     .withColumn("TrimestreAnoNome", concat(lit("T"), col("trimestreNum"), lit("-"), lit(col("ano")) )) \
-    .withColumn("DiaSemanaNum", weekday(col("Data")).cast("int")) \
+    .withColumn("DiaSemanaNum", dayofweek(col("Data")).cast("int")) \
     .withColumn("DiaSemanaNome", pt_br_dia_semana_udf(col("DiaSemanaNum"))) \
     .withColumn("DiaSemanaNomeAbrev", col("DiaSemanaNome").substr(1,3)) \
     .withColumn("SemanaIsoNum", weekofyear(col("Data")).cast("int")) \
     .withColumn("AnoIso", year(date_add(col("Data"), 26 - col("SemanaIsoNum"))).cast("int")) \
     .withColumn("SemanaAnoIsoNum", (col("AnoIso") * 100 + col("SemanaIsoNum")).cast("int")) \
     .withColumn("SemanaAnoIsoNome", concat(lit("S"), lit(lpad(col("SemanaIsoNum").cast("string"), 2, "0")), lit("-"), lit(col("ano")) )) \
-    .withColumn("E_FinalSemana", when(col("DiaSemanaNum")>4, 1).otherwise(0).cast("int")) \
+    .withColumn("E_FinalSemana", when(col("DiaSemanaNum")>5, 1).otherwise(0).cast("int")) \
     .withColumn("E_DiaUtil", when((col("E_Feriado") == 1) | (col("E_FinalSemana") == 1), 0).otherwise(1).cast("int")) \
     .withColumn("DataAtual", when(col("Data") == data_atual, "Data atual").otherwise(col("Data")).cast("string")) \
     .withColumn("SemanaAtual", when(col("SemanaAnoIsoNum") == semana_ano_iso_num_atual, "Semana atual").otherwise(col("SemanaAnoIsoNome")).cast("string")) \
