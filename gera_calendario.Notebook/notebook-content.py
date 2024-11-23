@@ -30,8 +30,9 @@ from datetime import datetime, timedelta
 import math
 
 # Parâmetros
-data_inicial = "2010-01-01" 
+data_inicial = "2024-01-01" 
 data_final = datetime.now().strftime("%Y-12-31")
+mes_inicio_ano_fiscal = 4
 nome_lakehouse = "lakehouse"
 nome_tabela = "calendario"
 
@@ -181,7 +182,13 @@ calendario_df = calendario_df.withColumn("Ano", year(col("Data")).cast("int")) \
     .withColumn("SemanaAtual", when(col("SemanaAnoIsoNum") == semana_ano_iso_num_atual, "Semana atual").otherwise(col("SemanaAnoIsoNome")).cast("string")) \
     .withColumn("MesAtual", when(col("MesAnoNum") == mes_ano_num_atual, "Mês atual").otherwise(col("MesAnoNome")).cast("string")) \
     .withColumn("TrimestreAtual", when(col("TrimestreAnoNum") == trimestre_ano_num_atual, "Trimestre atual").otherwise(col("TrimestreAnoNome")).cast("string")) \
-    .withColumn("AnoAtual", when(col("Ano") == ano_atual, "Ano atual").otherwise(col("Ano")).cast("string")) 
+    .withColumn("AnoAtual", when(col("Ano") == ano_atual, "Ano atual").otherwise(col("Ano")).cast("string")) \
+    .withColumn("AnoFiscal",when(col("MesNum") >= mes_inicio_ano_fiscal, concat_ws("-", col("Ano"), (col("Ano") + 1))).otherwise(concat_ws("/", (col("Ano") - 1), col("Ano"))).cast("string")) \
+    .withColumn("MesFiscalNum", when(col("MesNum")> mes_inicio_ano_fiscal-1, col("MesNum")-mes_inicio_ano_fiscal+1).otherwise(col("MesNum")+12-mes_inicio_ano_fiscal+1).cast("int")) \
+    .withColumn("MesFiscalNome", col("MesNome").cast("string")) \
+    .withColumn("MesFiscalNomeAbrev", col("MesNomeAbrev").cast("string")) \
+    .withColumn("TrimestreFiscal", concat(lit("T"),(floor((col("MesFiscalNum") - 1) / 3) + 1)).cast("string")) 
+
 
 # Salva o dataframe como tabela Delta
 calendario_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{nome_lakehouse}.{nome_tabela}")
@@ -189,6 +196,7 @@ calendario_df.write.format("delta").mode("overwrite").option("overwriteSchema", 
 # Exibe os dados carregados
 calendario_df = spark.sql(f"SELECT * FROM {nome_lakehouse}.{nome_tabela} ORDER BY Data ASC")
 display(calendario_df)
+
 
 # METADATA ********************
 
