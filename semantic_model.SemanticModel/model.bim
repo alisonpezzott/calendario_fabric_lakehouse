@@ -8,15 +8,15 @@
       },
       {
         "name": "PBIDesktopVersion",
-        "value": "2.139.7490.1 (Main)+ced83814b7c315e22d41d8327b694641706f1259"
+        "value": "2.139.7496.1 (Main)+061188de2d27b556d0c15d8f70c4426f68783390"
       },
       {
         "name": "PBI_QueryOrder",
         "value": "[\"DatabaseQuery\"]"
       },
       {
-        "name": "PBI_ProTooling",
-        "value": "[\"WebModelingEdit\",\"RemoteModeling\"]"
+        "name": "__TEdtr",
+        "value": "1"
       }
     ],
     "collation": "Latin1_General_100_BIN2_UTF8",
@@ -49,12 +49,12 @@
         ],
         "expression": [
           "let",
-          "    database = Sql.Database(\"GVKMT76PZ4CUHM2FS63QGXL5CY-HYELWHHV5WXEXPZAB2LWJOCXLA.datawarehouse.fabric.microsoft.com\", \"14abf524-2e28-481b-9600-7cc5d2aa928b\")",
+          "    database = Sql.Database(\"GVKMT76PZ4CUHM2FS63QGXL5CY-2AKE3XGROBUELPAEV3VMJKWQQA.datawarehouse.fabric.microsoft.com\", \"626f38f0-3b30-45b6-83b3-d423d3520f6d\")",
           "in",
           "    database"
         ],
         "kind": "m",
-        "lineageTag": "12971d4c-c03b-47d6-9a22-923afe8f8dcb"
+        "lineageTag": "9f15b3ae-c900-4aaf-871f-0b4dfc0aec7c"
       }
     ],
     "sourceQueryCulture": "en-US",
@@ -73,28 +73,14 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              },
-              {
-                "name": "UnderlyingDateTimeDataType",
-                "value": "Date"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "SummarizeBy"
-              },
-              {
-                "property": "DataType"
-              },
-              {
-                "property": "FormatString"
+                "value": "Automatic"
               }
             ],
             "dataType": "dateTime",
+            "displayFolder": "Dia",
             "formatString": "Short Date",
             "isKey": true,
-            "lineageTag": "319c7da6-0f48-409c-b33f-2aa41f0ac292",
+            "lineageTag": "07224cd1-b177-401a-83e7-9331e9da9048",
             "sourceColumn": "Data",
             "sourceLineageTag": "Data",
             "sourceProviderType": "date",
@@ -108,14 +94,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Especiais",
-            "lineageTag": "eef4d07d-48e8-4373-83a7-2d46d0aa088a",
+            "displayFolder": "Dias Úteis / Feriados",
+            "lineageTag": "a8668653-4956-4549-b54f-c594c38545bb",
             "sourceColumn": "Feriado",
             "sourceLineageTag": "Feriado",
             "sourceProviderType": "varchar(8000)",
@@ -126,21 +107,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Especiais",
+            "displayFolder": "Dias Úteis / Feriados",
             "formatString": "0",
-            "lineageTag": "8cf1180c-4242-4af6-9852-10f6c48ca3a7",
+            "lineageTag": "04fe1c57-9a8e-4791-a04b-e453752cf509",
             "sourceColumn": "E_Feriado",
             "sourceLineageTag": "E_Feriado",
             "sourceProviderType": "int",
@@ -151,21 +124,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
             "displayFolder": "Ano",
             "formatString": "0",
-            "lineageTag": "ce2471d6-9957-40c3-9457-9c39e4429ec1",
+            "lineageTag": "49abc503-736a-4b48-9b6e-aa75500cf2c4",
             "sourceColumn": "Ano",
             "sourceLineageTag": "Ano",
             "sourceProviderType": "int",
@@ -176,21 +141,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
             "displayFolder": "Dia",
             "formatString": "0",
-            "lineageTag": "218e2fc9-9621-4fb8-acb3-3183bac9dd7c",
+            "lineageTag": "3296894e-4b74-4bba-a18d-e3a7f37b341f",
             "sourceColumn": "Dia",
             "sourceLineageTag": "Dia",
             "sourceProviderType": "int",
@@ -201,21 +158,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Mes",
+            "displayFolder": "Meses",
             "formatString": "0",
-            "lineageTag": "0e9b4231-6616-4c1a-8bf1-10b0a51f172e",
+            "lineageTag": "40a685e4-573a-478d-b821-14fd9d267706",
             "sourceColumn": "MesNum",
             "sourceLineageTag": "MesNum",
             "sourceProviderType": "int",
@@ -229,17 +178,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Mes",
-            "lineageTag": "a7ed550e-6783-425c-bb6b-245b48c53dbc",
+            "displayFolder": "Meses",
+            "lineageTag": "49f37958-8cf2-47f1-bd34-2770719f34b3",
             "sortByColumn": "MesNum",
             "sourceColumn": "MesNome",
             "sourceLineageTag": "MesNome",
@@ -254,17 +195,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Mes",
-            "lineageTag": "ef888def-e42c-45f7-a6a7-b08e8bd5ec84",
+            "displayFolder": "Meses",
+            "lineageTag": "72491e30-59da-4b7e-b037-5e1d6bb1408a",
             "sortByColumn": "MesNum",
             "sourceColumn": "MesNomeAbrev",
             "sourceLineageTag": "MesNomeAbrev",
@@ -279,17 +212,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Mes",
-            "lineageTag": "442154e8-1bc7-4a8f-836b-d58f1374678d",
+            "displayFolder": "Meses",
+            "lineageTag": "c1595210-efaf-4948-bc44-c812ff2ed78c",
             "sortByColumn": "MesAnoNum",
             "sourceColumn": "MesAnoNome",
             "sourceLineageTag": "MesAnoNome",
@@ -301,21 +226,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Mes",
+            "displayFolder": "Meses",
             "formatString": "0",
-            "lineageTag": "f2306a54-dfc6-4b9e-a816-b14b3baa9e16",
+            "lineageTag": "2095e73c-c4cd-44f4-9813-f54d071e88f0",
             "sourceColumn": "MesAnoNum",
             "sourceLineageTag": "MesAnoNum",
             "sourceProviderType": "int",
@@ -326,21 +243,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Trimestre",
+            "displayFolder": "Trimestres",
             "formatString": "0",
-            "lineageTag": "2991b4f1-55d5-4372-b5e9-7eb73834b01c",
+            "lineageTag": "1627e2d9-9b12-45e3-aece-90f7cc038e30",
             "sourceColumn": "TrimestreNum",
             "sourceLineageTag": "TrimestreNum",
             "sourceProviderType": "int",
@@ -351,21 +260,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Trimestre",
+            "displayFolder": "Trimestres",
             "formatString": "0",
-            "lineageTag": "553c1528-7cc5-42c3-9899-c9e39d5b7b24",
+            "lineageTag": "ebeec3a0-c826-4f9f-ae40-4199154c7aee",
             "sourceColumn": "TrimestreAnoNum",
             "sourceLineageTag": "TrimestreAnoNum",
             "sourceProviderType": "int",
@@ -379,17 +280,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Trimestre",
-            "lineageTag": "92dbb1b3-f27b-4cd4-ad71-babe59828f12",
+            "displayFolder": "Trimestres",
+            "lineageTag": "5a469336-937c-4d95-9c13-f800184b8cca",
             "sortByColumn": "TrimestreAnoNum",
             "sourceColumn": "TrimestreAnoNome",
             "sourceLineageTag": "TrimestreAnoNome",
@@ -401,21 +294,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
             "displayFolder": "Dia",
             "formatString": "0",
-            "lineageTag": "d921e7fe-bdee-4860-982f-c710d3365f94",
+            "lineageTag": "66689051-342a-4b6e-a367-de86ee4e7f65",
             "sourceColumn": "DiaSemanaNum",
             "sourceLineageTag": "DiaSemanaNum",
             "sourceProviderType": "int",
@@ -429,17 +314,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
             "displayFolder": "Dia",
-            "lineageTag": "b9dc1401-6fe8-47ef-bf29-1a73240d9808",
+            "lineageTag": "f6847b4e-f684-4e44-862a-bc03a731f36d",
             "sortByColumn": "DiaSemanaNum",
             "sourceColumn": "DiaSemanaNome",
             "sourceLineageTag": "DiaSemanaNome",
@@ -454,17 +331,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
             "displayFolder": "Dia",
-            "lineageTag": "e2cff9ad-df83-448c-b8ec-cd2982abce07",
+            "lineageTag": "7f42176a-f4a7-4316-aa99-f528df327200",
             "sortByColumn": "DiaSemanaNum",
             "sourceColumn": "DiaSemanaNomeAbrev",
             "sourceLineageTag": "DiaSemanaNomeAbrev",
@@ -476,21 +345,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Semana",
+            "displayFolder": "Semanas",
             "formatString": "0",
-            "lineageTag": "08a2a220-6f06-4ccd-a9d0-343812359f34",
+            "lineageTag": "9e1b2c1e-80c2-45a8-b144-867d2442e459",
             "sourceColumn": "SemanaIsoNum",
             "sourceLineageTag": "SemanaIsoNum",
             "sourceProviderType": "int",
@@ -501,21 +362,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
             "displayFolder": "Ano",
             "formatString": "0",
-            "lineageTag": "a5c5acb3-d6be-4f27-8541-9ec7f980bfb2",
+            "lineageTag": "e366388d-d06e-418f-9e81-a7c88e9910dd",
             "sourceColumn": "AnoIso",
             "sourceLineageTag": "AnoIso",
             "sourceProviderType": "int",
@@ -526,21 +379,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Semana",
+            "displayFolder": "Semanas",
             "formatString": "0",
-            "lineageTag": "1342ac64-ec78-41d2-8984-21bd4ab24317",
+            "lineageTag": "8ef14353-b24a-49e5-83e3-3a3fb6fbed42",
             "sourceColumn": "SemanaAnoIsoNum",
             "sourceLineageTag": "SemanaAnoIsoNum",
             "sourceProviderType": "int",
@@ -554,17 +399,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Semana",
-            "lineageTag": "7ea230ab-ace5-40e9-ad8a-7e5bda48ff83",
+            "displayFolder": "Semanas",
+            "lineageTag": "30c0770b-8961-4877-ae3a-3c6fc7a3c9ef",
             "sortByColumn": "SemanaAnoIsoNum",
             "sourceColumn": "SemanaAnoIsoNome",
             "sourceLineageTag": "SemanaAnoIsoNome",
@@ -576,21 +413,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Especiais",
+            "displayFolder": "Dias Úteis / Feriados",
             "formatString": "0",
-            "lineageTag": "8d69d9db-1f8f-4fb7-b280-2ecfd2c29577",
+            "lineageTag": "b3be032f-aa48-4026-af19-34fef696fa67",
             "sourceColumn": "E_FinalSemana",
             "sourceLineageTag": "E_FinalSemana",
             "sourceProviderType": "int",
@@ -601,21 +430,13 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "int64",
-            "displayFolder": "Especiais",
+            "displayFolder": "Dias Úteis / Feriados",
             "formatString": "0",
-            "lineageTag": "0ddd11c3-56b4-4041-af95-58f7bcde124f",
+            "lineageTag": "140c0996-e74d-4b0b-b6f5-a28b3a3d1c31",
             "sourceColumn": "E_DiaUtil",
             "sourceLineageTag": "E_DiaUtil",
             "sourceProviderType": "int",
@@ -629,17 +450,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
             "displayFolder": "Dia",
-            "lineageTag": "9ea3621b-84b4-4979-bfc1-c21c49c5d21a",
+            "lineageTag": "825e9b35-59d3-4d47-903d-cf2443106c84",
             "sortByColumn": "Data",
             "sourceColumn": "DataAtual",
             "sourceLineageTag": "DataAtual",
@@ -654,17 +467,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Semana",
-            "lineageTag": "2439bfa6-f282-4c3f-b257-d32c49beed3e",
+            "displayFolder": "Semanas",
+            "lineageTag": "b84af5dc-4ea5-42e3-a1ed-226388526b5b",
             "sortByColumn": "SemanaAnoIsoNum",
             "sourceColumn": "SemanaAtual",
             "sourceLineageTag": "SemanaAtual",
@@ -679,17 +484,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SortByColumn"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Mes",
-            "lineageTag": "f5db8733-0dce-42fe-90d4-ee607588c137",
+            "displayFolder": "Meses",
+            "lineageTag": "33ac9a25-1d1d-4d8c-89a4-72c252c0a868",
             "sortByColumn": "MesAnoNum",
             "sourceColumn": "MesAtual",
             "sourceLineageTag": "MesAtual",
@@ -704,17 +501,9 @@
                 "value": "Automatic"
               }
             ],
-            "changedProperties": [
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "DisplayFolder"
-              }
-            ],
             "dataType": "string",
-            "displayFolder": "Trimestre",
-            "lineageTag": "4e0eca44-3703-4cef-915d-cc88919cb276",
+            "displayFolder": "Trimestres",
+            "lineageTag": "847cccdf-4a3d-4964-91f0-cd37618aca37",
             "sortByColumn": "TrimestreAnoNum",
             "sourceColumn": "TrimestreAtual",
             "sourceLineageTag": "TrimestreAtual",
@@ -726,32 +515,104 @@
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "User"
-              }
-            ],
-            "changedProperties": [
-              {
-                "property": "DisplayFolder"
-              },
-              {
-                "property": "SortByColumn"
-              },
-              {
-                "property": "SummarizeBy"
+                "value": "Automatic"
               }
             ],
             "dataType": "string",
             "displayFolder": "Ano",
-            "lineageTag": "b0dd2f96-937a-4e26-908c-947d9e32ba2a",
+            "lineageTag": "a645fe67-e904-4934-849a-6b246a5939a4",
             "sortByColumn": "Ano",
             "sourceColumn": "AnoAtual",
             "sourceLineageTag": "AnoAtual",
             "sourceProviderType": "varchar(8000)",
             "summarizeBy": "none"
+          },
+          {
+            "name": "AnoFiscal",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "string",
+            "displayFolder": "Ano",
+            "lineageTag": "b4b47197-d41a-4c11-bb60-29a996b4c0b7",
+            "sourceColumn": "AnoFiscal",
+            "sourceLineageTag": "AnoFiscal",
+            "sourceProviderType": "varchar(8000)",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MesFiscalNum",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "int64",
+            "displayFolder": "Meses",
+            "formatString": "0",
+            "lineageTag": "96b448ef-0422-44b1-9517-fc065e9a5de5",
+            "sourceColumn": "MesFiscalNum",
+            "sourceLineageTag": "MesFiscalNum",
+            "sourceProviderType": "int",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MesFiscalNome",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "string",
+            "displayFolder": "Meses",
+            "lineageTag": "18b65598-fa17-46d9-b2c5-8cba33234e2b",
+            "sortByColumn": "MesFiscalNum",
+            "sourceColumn": "MesFiscalNome",
+            "sourceLineageTag": "MesFiscalNome",
+            "sourceProviderType": "varchar(8000)",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MesFiscalNomeAbrev",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "string",
+            "displayFolder": "Meses",
+            "lineageTag": "14a1b15e-3ad8-480a-aed3-87b926ecbdd8",
+            "sortByColumn": "MesFiscalNum",
+            "sourceColumn": "MesFiscalNomeAbrev",
+            "sourceLineageTag": "MesFiscalNomeAbrev",
+            "sourceProviderType": "varchar(8000)",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "TrimestreFiscal",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "string",
+            "displayFolder": "Trimestres",
+            "lineageTag": "1279c4e9-4e94-4a6a-93a5-a5ba473c5b9f",
+            "sourceColumn": "TrimestreFiscal",
+            "sourceLineageTag": "TrimestreFiscal",
+            "sourceProviderType": "varchar(8000)",
+            "summarizeBy": "none"
           }
         ],
         "dataCategory": "Time",
-        "lineageTag": "5cd74c91-390a-4f1c-8293-430520306ccd",
+        "lineageTag": "e491b876-ec98-4fdb-b2b7-bc6cacce00b7",
         "partitions": [
           {
             "name": "calendario",
