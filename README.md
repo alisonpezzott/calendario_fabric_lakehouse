@@ -304,6 +304,9 @@ calendario.Columns["Data"].IsKey = true;
 
 21. Pressione Ctrl+S e feche o Tabular Editor;
 22. Retorne ao modelo semântico e sua tabela calendario estará devidamente configurada;
+23. Faça o agendamento para o update do seu notebook.
+
+    
 
 
 
