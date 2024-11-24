@@ -31,7 +31,9 @@ import math
 
 # Parâmetros
 data_inicial = "2024-01-01" 
-data_final = datetime.now().strftime("%Y-12-31")
+data_atual = datetime.now()
+anos_futuros = 5
+data_final = data_atual.replace(year=data_atual.year+anos_futuros, month=12, day=31).strftime("%Y-12-31")
 mes_inicio_ano_fiscal = 4
 nome_lakehouse = "lakehouse"
 nome_tabela = "calendario"
@@ -126,7 +128,7 @@ pt_br_mes_nome_udf = udf(lambda x: pt_br_mes_nome[x], StringType())
 pt_br_dia_semana_udf = udf(lambda x: pt_br_dia_semana[x], StringType())
 
 # Cria um DataFrame temporário com a data atual
-data_atual_df = spark.createDataFrame([(datetime.now(),)], ["data_atual"])
+data_atual_df = spark.createDataFrame([(data_atual,)], ["data_atual"])
 
 # Dataframe para variáveis em relação a data atual
 data_atual_df = data_atual_df.withColumn("mes_atual", month(col("data_atual")).cast("int")) \
@@ -196,6 +198,7 @@ calendario_df.write.format("delta").mode("overwrite").option("overwriteSchema", 
 # Exibe os dados carregados
 calendario_df = spark.sql(f"SELECT * FROM {nome_lakehouse}.{nome_tabela} ORDER BY Data ASC")
 display(calendario_df)
+
 
 
 # METADATA ********************
