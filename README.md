@@ -1,6 +1,6 @@
 ## Notebook Spark para carregar a tabela calendário no lakehouse
 
-Este README é arquivo de suporte para o vídeo .... 
+Este README é arquivo de suporte para o vídeo [Calendário no Lakehouse Fabric com Notebook Spark](https://youtu.be/iTci-AxQBtg)
 
 Instruções:
 
